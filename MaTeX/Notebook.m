@@ -12,11 +12,12 @@ With[{root = DirectoryName[DirectoryName[$InputFileName]]},
   If[!MemberQ[$Path, root], AppendTo[$Path, root]]
 ];
 
-latexStyle[] := Cell[StyleData["LaTeX", StyleDefinitions -> StyleData["Input"]],
+latexStyle[] := Cell[StyleData["LaTeX", StyleDefinitions -> StyleData["Text"]],
   MenuSortingValue -> 1500,
   Evaluatable -> True, CellGroupingRules -> "InputGrouping",
   FormatType -> InputForm, DefaultFormatType -> InputForm,
-  FontFamily -> Dynamic[AbsoluteCurrentValue[{StyleHints, "CodeFont"}]],
+  (* Override InputForm's code font while inheriting Text size and weight. *)
+  FontFamily -> Dynamic[CurrentValue[{StyleDefinitions, "Text", FontFamily}]],
   ShowAutoStyles -> False,
   AutoQuoteCharacters -> {},
   CodeAssistOptions -> {"AutoPopupEnable" -> False},

@@ -30,6 +30,22 @@ Internal`InheritedBlock[{MaTeX`MaTeX},
   AppendTo[tests, VerificationTest[
     callback[BoxData[FractionBox["1", "2"]]], $Failed,
     TestID -> "rejects two-dimensional notation rather than silently flattening it"]];
+  Internal`InheritedBlock[{NotebookRead, EvaluationCell},
+    Unprotect[NotebookRead, EvaluationCell]; Clear[NotebookRead, EvaluationCell];
+    EvaluationCell[] := CellObject["source"];
+    NotebookRead[_] := Cell[BoxData[RowBox[{"Hello", "  ", "world", "\n\n",
+      "Inline math: $x + y$."}]], "LaTeX"];
+    AppendTo[tests, VerificationTest[
+      Block[{$Notebooks = True}, callback[BoxData[RowBox[{"Hello", "world"}]]]];
+      received,
+      "\\hbox{\\parbox{15cm}{\nHello  world\n\nInline math: $x + y$.\n}}",
+      TestID -> "stored cell preserves spaces and paragraphs lost from evaluation input"]];
+    NotebookRead[_] := Cell[TextData[{"Hello ", "world"}], "LaTeX"];
+    AppendTo[tests, VerificationTest[
+      Block[{$Notebooks = True}, callback["Helloworld"]]; received,
+      "\\hbox{\\parbox{15cm}{\nHello world\n}}",
+      TestID -> "text cell source also preserves word separation"]];
+  ];
 ];
 (* Compile the exact paragraph wrapper with MaTeX's real document template.
    This exercises LaTeX itself without the unavailable headless PDF importer. *)

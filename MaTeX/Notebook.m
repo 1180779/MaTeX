@@ -32,10 +32,17 @@ latexStyle[] := Cell[StyleData["LaTeX", StyleDefinitions -> StyleData["Input"]],
           StringReplace[#, "\[IndentingNewLine]" -> "\n"] <> "\n}}", FontSize -> 16]
       ]
     ] &)[
-      (* StandardForm cells send BoxData/RowBox even after a style change.
-         Flatten only their text containers; never parse source as Wolfram code. *)
+      (* Evaluation input may already have whitespace stripped by the front end.
+         Read the stored source instead, then flatten only text containers. *)
       (If[VectorQ[#, StringQ], StringJoin[#], $Failed] &)[
-        Flatten[{# /. {BoxData -> List, RowBox -> List}}]
+        Flatten[{
+          If[TrueQ[$Notebooks],
+            (If[MatchQ[#, _Cell], First[#], $Failed] &)[
+              Quiet[Check[NotebookRead[EvaluationCell[]], $Failed]]
+            ],
+            #
+          ] /. {BoxData -> List, RowBox -> List, TextData -> List}
+        }]
       ]
     ]
   ]

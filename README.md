@@ -120,7 +120,10 @@ inside the paragraph box. MaTeX's default packages (including amsmath) are loade
 Existing math-only cells now need math delimiters when re-rendered; for example,
 change `\frac{1}{2}` to `$\frac{1}{2}$`.
 Ordinary typed or pasted text is accepted even if Mathematica internally stores
-the cell in `BoxData`/`RowBox` form. Typeset fractions and other two-dimensional
+the cell in `BoxData`/`RowBox` form. The evaluator reads the stored source cell
+directly, preserving spaces that Mathematica may strip from evaluation input.
+LaTeX itself still applies its normal whitespace rules (multiple spaces collapse
+to one, and blank lines start paragraphs). Typeset fractions and other two-dimensional
 notation must be replaced with their raw LaTeX source. After updating this file,
 reload it with `Get` and rerun `EnableLaTeXCells` to refresh a notebook's embedded
 evaluator.

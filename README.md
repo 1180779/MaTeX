@@ -107,11 +107,18 @@ Get["/home/rdkgsk/Projects/MaTeX/MaTeX/Notebook.m"];
 MaTeX`Notebook`CreateLaTeXNotebook[]
 ```
 
-Choose **LaTeX** from the cell style menu and type raw math-mode LaTeX with
-single backslashes, without quotes or dollar delimiters. Press **Shift+Enter**
-to render an ordinary graphic output beneath the source. `aligned`, `matrix`,
-and other math-mode environments work; a complete LaTeX document or an
-`equation` environment is not accepted by MaTeX's math-mode renderer.
+Choose **LaTeX** from the cell style menu and write a LaTeX note in text mode,
+with single backslashes and no surrounding Wolfram string quotes. Use `$...$`
+for inline math and `\[...\]` or `equation` for display math. Blank lines create
+paragraphs; commands such as `\textbf` and environments such as `itemize` work.
+Press **Shift+Enter** to render an ordinary graphic output beneath the source.
+The helper wraps each note in a 15 cm wide text paragraph box, so lines wrap.
+Supply document-body content, without `\documentclass`, `\usepackage`, or
+`\begin{document}`. Each cell compiles independently, so equation counters and
+cross-references do not span cells. Page floats such as `figure` are not supported
+inside the paragraph box. MaTeX's default packages (including amsmath) are loaded.
+Existing math-only cells now need math delimiters when re-rendered; for example,
+change `\frac{1}{2}` to `$\frac{1}{2}$`.
 Ordinary typed or pasted text is accepted even if Mathematica internally stores
 the cell in `BoxData`/`RowBox` form. Typeset fractions and other two-dimensional
 notation must be replaced with their raw LaTeX source. After updating this file,
@@ -139,7 +146,8 @@ the embedded evaluator loads MaTeX automatically when first used.
 
 Run structural and serialization checks with
 `WolframKernel -noinit -noprompt -script tests/Notebook.wls`.
-These do not verify front-end keyboard dispatch or PDF import.
+These also compile a mixed text/math note with `pdflatex` and inspect it with
+`pdftotext`. They do not verify front-end keyboard dispatch or PDF import.
 
 Use `MaTeX[texcode]` or `MaTeX[expression]` to typeset using LaTeX.  The latter will automatically apply `TeXForm` to `expression`.
 

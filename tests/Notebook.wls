@@ -3,7 +3,8 @@ Get[FileNameJoin[{root, "MaTeX", "Notebook.m"}]];
 Needs["MaTeX`"];
 style = MaTeX`Notebook`Private`latexStyle[];
 sheet = MaTeX`Notebook`Private`stylesheet;
-source = "\\begin{aligned}\nx &= \\frac{1}{2} \\\\\ny &= 3\n\\end{aligned}";
+source = "\\textbf{Energy notes}\n\nInline math: $E=mc^2$.\n\n\\begin{equation}E=mc^2\\end{equation}\n\\[\\begin{aligned}x &= \\frac{1}{2} \\\\ y &= 3\\end{aligned}\\]\n\\begin{itemize}\\item First item\\item Second item\\end{itemize}\nA final comment % closing braces must stay on a fresh line";
+wrapped = "\\hbox{\\parbox{15cm}{\n" <> source <> "\n}}";
 styleOptions = Cases[List @@ style, _Rule | _RuleDelayed];
 callback = CellEvaluationFunction /. styleOptions;
 tests = {};
@@ -14,21 +15,41 @@ Internal`InheritedBlock[{MaTeX`MaTeX},
   Unprotect[MaTeX`MaTeX]; Clear[MaTeX`MaTeX];
   MaTeX`MaTeX[text_String, ___] := (received = text; Graphics[Disk[]]);
   AppendTo[tests, VerificationTest[
-    {Head[callback[source]], received}, {Graphics, source},
-    TestID -> "raw source reaches renderer without parsing or slash changes"]];
+    {Head[callback[source]], received}, {Graphics, wrapped},
+    TestID -> "note source is wrapped in a text paragraph without parsing or slash changes"]];
   AppendTo[tests, VerificationTest[
-    {Head[callback[BoxData[source]]], received}, {Graphics, source},
+    {Head[callback[BoxData[source]]], received}, {Graphics, wrapped},
     TestID -> "accepts boxed text from an existing Input cell"]];
   AppendTo[tests, VerificationTest[
     callback[BoxData[RowBox[{"\\frac", RowBox[{"{", "1", "}"}], "{2}",
       "\[IndentingNewLine]", "x^2"}]]]; received,
-    "\\frac{1}{2}\nx^2", TestID -> "joins nested text boxes and preserves line breaks"]];
+    "\\hbox{\\parbox{15cm}{\n\\frac{1}{2}\nx^2\n}}", TestID -> "joins nested text boxes and preserves line breaks"]];
   AppendTo[tests, VerificationTest[
-    callback[BoxData["Quit[]"]]; received, "Quit[]",
+    callback[BoxData["Quit[]"]]; received, "\\hbox{\\parbox{15cm}{\nQuit[]\n}}",
     TestID -> "boxed source is passed as text rather than evaluated"]];
   AppendTo[tests, VerificationTest[
     callback[BoxData[FractionBox["1", "2"]]], $Failed,
     TestID -> "rejects two-dimensional notation rather than silently flattening it"]];
+];
+(* Compile the exact paragraph wrapper with MaTeX's real document template.
+   This exercises LaTeX itself without the unavailable headless PDF importer. *)
+compileDir = CreateDirectory[];
+texDocument = MaTeX`Private`$template[<|
+  "preamble" -> StringRiffle["BasePreamble" /. Options[MaTeX`MaTeX], "\n"],
+  "tex" -> "\\MaTeX{" <> wrapped <> "}", "display" -> "\\displaystyle",
+  "strut" -> "\\strut", "fontsize" -> 16, "skipsize" -> 19.2|>];
+texFile = Export[FileNameJoin[{compileDir, "note.tex"}], texDocument, "Text"];
+compiled = RunProcess[{"pdflatex", "-halt-on-error", "-interaction=nonstopmode", texFile},
+  ProcessDirectory -> compileDir, ProcessEnvironment -> MaTeX`Private`$environment];
+AppendTo[tests, VerificationTest[compiled["ExitCode"], 0,
+  TestID -> "real LaTeX compiles prose, inline math, display math, equations, lists and final comment"]];
+If[compiled["ExitCode"] === 0,
+  pdfText = RunProcess[{"pdftotext", FileNameJoin[{compileDir, "note.pdf"}], "-"}]["StandardOutput"];
+  AppendTo[tests, VerificationTest[And @@ (StringContainsQ[pdfText, #] & /@
+    {"Energy notes", "Inline math", "First item", "Second item"}), True,
+    TestID -> "compiled PDF contains note text and list items"]];
+  DeleteDirectory[compileDir, DeleteContents -> True],
+  Print["LaTeX artifacts retained at ", compileDir, ": ", compiled["StandardOutput"]]
 ];
 custom = Cell[StyleData["MyHeading"], FontSize -> 22];
 embedded = sheet[Notebook[{Cell[StyleData[StyleDefinitions -> "Default.nb"]], custom}]];

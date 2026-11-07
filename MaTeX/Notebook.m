@@ -22,11 +22,14 @@ latexStyle[] := Cell[StyleData["LaTeX", StyleDefinitions -> StyleData["Input"]],
   (* The evaluator is embedded, so viewing never depends on this helper package. *)
   CellEvaluationFunction -> Function[
     (If[!StringQ[#],
-      Print["This cell contains two-dimensional notation. Replace its contents with raw LaTeX, such as \\frac{1}{2}."]; $Failed,
+      Print["This cell contains two-dimensional notation. Replace its contents with raw LaTeX, such as $\\frac{1}{2}$."]; $Failed,
       If[Quiet[Check[Needs["MaTeX`"], $Failed]] === $Failed,
         Print["Install MaTeX, TeX and Ghostscript to render this cell. Saved output remains viewable."];
         $Failed,
-        MaTeX`MaTeX[StringReplace[#, "\[IndentingNewLine]" -> "\n"], FontSize -> 16]
+        (* A paragraph box supplies text mode, wrapping, lists and display math
+           inside MaTeX's math-mode renderer. Newlines protect closing braces from %. *)
+        MaTeX`MaTeX["\\hbox{\\parbox{15cm}{\n" <>
+          StringReplace[#, "\[IndentingNewLine]" -> "\n"] <> "\n}}", FontSize -> 16]
       ]
     ] &)[
       (* StandardForm cells send BoxData/RowBox even after a style change.
@@ -59,8 +62,8 @@ InsertLaTeXCell[] := InsertLaTeXCell[InputNotebook[]];
 
 CreateLaTeXNotebook[] := CreateDocument[Notebook[{
   Cell["LaTeX cells", "Title"],
-  Cell["Choose LaTeX from the cell style menu. Write raw math-mode LaTeX (single backslashes, no dollar delimiters), then press Shift+Enter. Source and rendered output are saved in this notebook. Rendering requires MaTeX, TeX and Ghostscript; viewing saved graphics does not.", "Text"],
-  Cell["\\begin{aligned}\n  \\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\\\\n  \\nabla \\cdot \\mathbf{B} &= 0\n\\end{aligned}", "LaTeX"]
+  Cell["Choose LaTeX from the cell style menu. Write ordinary LaTeX text, using $...$ for inline math and \\[...\\] or equation environments for display math, then press Shift+Enter. Source and rendered output are saved in this notebook. Rendering requires MaTeX, TeX and Ghostscript; viewing saved graphics does not.", "Text"],
+  Cell["\\textbf{Maxwell's equations}\n\nHere $\\rho$ is the charge density.\n\\[\n\\begin{aligned}\n  \\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\\\\n  \\nabla \\cdot \\mathbf{B} &= 0\n\\end{aligned}\n\\]\n\nA new paragraph starts after a blank line.", "LaTeX"]
 }, StyleDefinitions -> stylesheet["Default.nb"]]];
 
 End[];

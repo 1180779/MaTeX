@@ -42,7 +42,8 @@ Internal`InheritedBlock[{CreateDocument},
   Unprotect[CreateDocument]; Clear[CreateDocument]; CreateDocument[nb_Notebook] := nb;
   starter = MaTeX`Notebook`CreateLaTeXNotebook[];
 ];
-Put[starter, FileNameJoin[{root, "examples", "LaTeXCells.nb"}]];
+Export[FileNameJoin[{root, "examples", "LaTeXCells.nb"}],
+  ToString[starter, InputForm, PageWidth -> Infinity], "Text"];
 report = TestReport[tests];
 Print["Passed: ", report["TestsSucceededCount"], "; failed: ", report["TestsFailedCount"]];
 Scan[If[#["Outcome"] =!= "Success", Print[{#["TestID"], #["ActualOutput"]}]] &,

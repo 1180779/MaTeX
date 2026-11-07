@@ -98,6 +98,64 @@ After evaluating the function definition above, just run `updateMaTeX[]`, then `
 
 ## Usage
 
+### Raw LaTeX notebook cells (local addition)
+
+Load the optional notebook helper from this checkout:
+
+```mma
+Get["/home/rdkgsk/Projects/MaTeX/MaTeX/Notebook.m"];
+MaTeX`Notebook`CreateLaTeXNotebook[]
+```
+
+Choose **LaTeX** from the cell style menu and write a LaTeX note in text mode,
+with single backslashes and no surrounding Wolfram string quotes. Use `$...$`
+for inline math and `\[...\]` or `equation` for display math. Blank lines create
+paragraphs; commands such as `\textbf` and environments such as `itemize` work.
+Press **Shift+Enter** to render an ordinary graphic output beneath the source.
+The source editor uses the notebook's Text cell font, size and weight.
+It uses TextForm rather than InputForm so changes to Mathematica's code font
+do not change the LaTeX source editor's font.
+The helper wraps each note in a 15 cm wide text paragraph box, so lines wrap.
+Supply document-body content, without `\documentclass`, `\usepackage`, or
+`\begin{document}`. Each cell compiles independently, so equation counters and
+cross-references do not span cells. Page floats such as `figure` are not supported
+inside the paragraph box. MaTeX's default packages (including amsmath) are loaded.
+Existing math-only cells now need math delimiters when re-rendered; for example,
+change `\frac{1}{2}` to `$\frac{1}{2}$`.
+Ordinary typed or pasted text is accepted even if Mathematica internally stores
+the cell in `BoxData`/`RowBox` form. The evaluator reads the stored source cell
+directly, preserving spaces that Mathematica may strip from evaluation input.
+Unicode line separators (U+2028) are converted to ordinary newlines before rendering.
+LaTeX itself still applies its normal whitespace rules (multiple spaces collapse
+to one, and blank lines start paragraphs). Typeset fractions and other two-dimensional
+notation must be replaced with their raw LaTeX source. After updating this file,
+reload it with `Get` and rerun `EnableLaTeXCells` to refresh a notebook's embedded
+evaluator.
+
+For an existing notebook, evaluate
+``MaTeX`Notebook`EnableLaTeXCells[EvaluationNotebook[]]``. Alternatively, run
+``MaTeX`Notebook`InsertLaTeXCell[]`` to enable the style and insert a source cell
+at the selection in the input notebook. The helper adds this checkout to the
+current kernel's search path; it does not install a paclet.
+
+The source, ordinary output graphics, and embedded stylesheet are saved in the
+`.nb`. Another Mathematica installation can display saved output and edit the
+source without this helper or MaTeX. Re-rendering requires MaTeX, TeX and
+Ghostscript. Editing source does not update its output until evaluated. Do not
+delete output cells before saving if you want the rendered equations to travel
+with the notebook. The source/output group can be collapsed using Mathematica's
+normal cell grouping controls.
+
+`examples/LaTeXCells.nb` is a starter notebook with the style already embedded.
+It initially contains source only; load MaTeX in the kernel (or load the helper
+above) and evaluate the example to render it. In a normal installed MaTeX setup,
+the embedded evaluator loads MaTeX automatically when first used.
+
+Run structural and serialization checks with
+`WolframKernel -noinit -noprompt -script tests/Notebook.wls`.
+These also compile a mixed text/math note with `pdflatex` and inspect it with
+`pdftotext`. They do not verify front-end keyboard dispatch or PDF import.
+
 Use `MaTeX[texcode]` or `MaTeX[expression]` to typeset using LaTeX.  The latter will automatically apply `TeXForm` to `expression`.
 
 The LaTeX code is interpreted in math mode.  Remember to escape backlashes (i.e. type *two* `\` characters when you mean one) when writing LaTeX code in Mathematica strings, e.g.

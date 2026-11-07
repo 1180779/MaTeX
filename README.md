@@ -113,6 +113,8 @@ for inline math and `\[...\]` or `equation` for display math. Blank lines create
 paragraphs; commands such as `\textbf` and environments such as `itemize` work.
 Press **Shift+Enter** to render an ordinary graphic output beneath the source.
 The source editor uses the notebook's Text cell font, size and weight.
+It uses TextForm rather than InputForm so changes to Mathematica's code font
+do not change the LaTeX source editor's font.
 The helper wraps each note in a 15 cm wide text paragraph box, so lines wrap.
 Supply document-body content, without `\documentclass`, `\usepackage`, or
 `\begin{document}`. Each cell compiles independently, so equation counters and

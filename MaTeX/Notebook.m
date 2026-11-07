@@ -15,9 +15,8 @@ With[{root = DirectoryName[DirectoryName[$InputFileName]]},
 latexStyle[] := Cell[StyleData["LaTeX", StyleDefinitions -> StyleData["Text"]],
   MenuSortingValue -> 1500,
   Evaluatable -> True, CellGroupingRules -> "InputGrouping",
-  FormatType -> InputForm, DefaultFormatType -> InputForm,
-  (* Override InputForm's code font while inheriting Text size and weight. *)
-  FontFamily -> Dynamic[CurrentValue[{StyleDefinitions, "Text", FontFamily}]],
+  (* InputForm applies its own code font over the Text cell typography. *)
+  FormatType -> TextForm, DefaultFormatType -> TextForm,
   ShowAutoStyles -> False,
   AutoQuoteCharacters -> {},
   CodeAssistOptions -> {"AutoPopupEnable" -> False},

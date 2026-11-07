@@ -10,7 +10,7 @@ callback = CellEvaluationFunction /. styleOptions;
 tests = {};
 AppendTo[tests, VerificationTest[
   {FormatType, DefaultFormatType, Evaluatable} /. styleOptions,
-  {InputForm, InputForm, True}, TestID -> "raw cells use evaluatable plain text"]];
+  {TextForm, TextForm, True}, TestID -> "raw cells use evaluatable Text formatting"]];
 Internal`InheritedBlock[{MaTeX`MaTeX},
   Unprotect[MaTeX`MaTeX]; Clear[MaTeX`MaTeX];
   MaTeX`MaTeX[text_String, ___] := (received = text; Graphics[Disk[]]);

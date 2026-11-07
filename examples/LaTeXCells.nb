@@ -1,0 +1,21 @@
+Notebook[{Cell["LaTeX cells", "Title"], Cell["Choose LaTeX from the cell \
+style menu. Write raw math-mode LaTeX (single backslashes, no dollar \
+delimiters), then press Shift+Enter. Source and rendered output are saved in \
+this notebook. Rendering requires MaTeX, TeX and Ghostscript; viewing saved \
+graphics does not.", "Text"], Cell["\\begin{aligned}\n  \\nabla \\cdot \
+\\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\\\\n  \\nabla \\cdot \
+\\mathbf{B} &= 0\n\\end{aligned}", "LaTeX"]}, 
+ StyleDefinitions -> Notebook[
+   {Cell[StyleData[StyleDefinitions -> "Default.nb"]], 
+    Cell[StyleData["LaTeX", StyleDefinitions -> StyleData["Input"]], 
+     MenuSortingValue -> 1500, Evaluatable -> True, 
+     CellGroupingRules -> "InputGrouping", FormatType -> InputForm, 
+     DefaultFormatType -> InputForm, FontFamily -> "Source Code Pro", 
+     ShowAutoStyles -> False, AutoQuoteCharacters -> {}, 
+     CodeAssistOptions -> {"AutoPopupEnable" -> False}, 
+     CellEvaluationFunction -> (If[ !StringQ[#1], 
+        Print["LaTeX cells require plain text input."]; $Failed, 
+        If[Quiet[Check[Needs["MaTeX`"], $Failed]] === $Failed, 
+         Print["Install MaTeX, TeX and Ghostscript to render this cell. Saved \
+output remains viewable."]; $Failed, MaTeX[#1, FontSize -> 16]]] & )]}, 
+   Visible -> False]]

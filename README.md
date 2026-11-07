@@ -98,6 +98,44 @@ After evaluating the function definition above, just run `updateMaTeX[]`, then `
 
 ## Usage
 
+### Raw LaTeX notebook cells (local addition)
+
+Load the optional notebook helper from this checkout:
+
+```mma
+Get["/home/rdkgsk/Projects/MaTeX/MaTeX/Notebook.m"];
+MaTeX`Notebook`CreateLaTeXNotebook[]
+```
+
+Choose **LaTeX** from the cell style menu and type raw math-mode LaTeX with
+single backslashes, without quotes or dollar delimiters. Press **Shift+Enter**
+to render an ordinary graphic output beneath the source. `aligned`, `matrix`,
+and other math-mode environments work; a complete LaTeX document or an
+`equation` environment is not accepted by MaTeX's math-mode renderer.
+
+For an existing notebook, evaluate
+``MaTeX`Notebook`EnableLaTeXCells[EvaluationNotebook[]]``. Alternatively, run
+``MaTeX`Notebook`InsertLaTeXCell[]`` to enable the style and insert a source cell
+at the selection in the input notebook. The helper adds this checkout to the
+current kernel's search path; it does not install a paclet.
+
+The source, ordinary output graphics, and embedded stylesheet are saved in the
+`.nb`. Another Mathematica installation can display saved output and edit the
+source without this helper or MaTeX. Re-rendering requires MaTeX, TeX and
+Ghostscript. Editing source does not update its output until evaluated. Do not
+delete output cells before saving if you want the rendered equations to travel
+with the notebook. The source/output group can be collapsed using Mathematica's
+normal cell grouping controls.
+
+`examples/LaTeXCells.nb` is a starter notebook with the style already embedded.
+It initially contains source only; load MaTeX in the kernel (or load the helper
+above) and evaluate the example to render it. In a normal installed MaTeX setup,
+the embedded evaluator loads MaTeX automatically when first used.
+
+Run structural and serialization checks with
+`WolframKernel -noinit -noprompt -script tests/Notebook.wls`.
+These do not verify front-end keyboard dispatch or PDF import.
+
 Use `MaTeX[texcode]` or `MaTeX[expression]` to typeset using LaTeX.  The latter will automatically apply `TeXForm` to `expression`.
 
 The LaTeX code is interpreted in math mode.  Remember to escape backlashes (i.e. type *two* `\` characters when you mean one) when writing LaTeX code in Mathematica strings, e.g.

@@ -17,8 +17,18 @@ Internal`InheritedBlock[{MaTeX`MaTeX},
     {Head[callback[source]], received}, {Graphics, source},
     TestID -> "raw source reaches renderer without parsing or slash changes"]];
   AppendTo[tests, VerificationTest[
-    Quiet[callback[BoxData["x"]]], $Failed,
-    TestID -> "rejects non-text input"]];
+    {Head[callback[BoxData[source]]], received}, {Graphics, source},
+    TestID -> "accepts boxed text from an existing Input cell"]];
+  AppendTo[tests, VerificationTest[
+    callback[BoxData[RowBox[{"\\frac", RowBox[{"{", "1", "}"}], "{2}",
+      "\[IndentingNewLine]", "x^2"}]]]; received,
+    "\\frac{1}{2}\nx^2", TestID -> "joins nested text boxes and preserves line breaks"]];
+  AppendTo[tests, VerificationTest[
+    callback[BoxData["Quit[]"]]; received, "Quit[]",
+    TestID -> "boxed source is passed as text rather than evaluated"]];
+  AppendTo[tests, VerificationTest[
+    callback[BoxData[FractionBox["1", "2"]]], $Failed,
+    TestID -> "rejects two-dimensional notation rather than silently flattening it"]];
 ];
 custom = Cell[StyleData["MyHeading"], FontSize -> 22];
 embedded = sheet[Notebook[{Cell[StyleData[StyleDefinitions -> "Default.nb"]], custom}]];

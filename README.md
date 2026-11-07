@@ -112,6 +112,11 @@ single backslashes, without quotes or dollar delimiters. Press **Shift+Enter**
 to render an ordinary graphic output beneath the source. `aligned`, `matrix`,
 and other math-mode environments work; a complete LaTeX document or an
 `equation` environment is not accepted by MaTeX's math-mode renderer.
+Ordinary typed or pasted text is accepted even if Mathematica internally stores
+the cell in `BoxData`/`RowBox` form. Typeset fractions and other two-dimensional
+notation must be replaced with their raw LaTeX source. After updating this file,
+reload it with `Get` and rerun `EnableLaTeXCells` to refresh a notebook's embedded
+evaluator.
 
 For an existing notebook, evaluate
 ``MaTeX`Notebook`EnableLaTeXCells[EvaluationNotebook[]]``. Alternatively, run

@@ -21,12 +21,18 @@ latexStyle[] := Cell[StyleData["LaTeX", StyleDefinitions -> StyleData["Input"]],
   CodeAssistOptions -> {"AutoPopupEnable" -> False},
   (* The evaluator is embedded, so viewing never depends on this helper package. *)
   CellEvaluationFunction -> Function[
-    If[!StringQ[#],
-      Print["LaTeX cells require plain text input."]; $Failed,
+    (If[!StringQ[#],
+      Print["This cell contains two-dimensional notation. Replace its contents with raw LaTeX, such as \\frac{1}{2}."]; $Failed,
       If[Quiet[Check[Needs["MaTeX`"], $Failed]] === $Failed,
         Print["Install MaTeX, TeX and Ghostscript to render this cell. Saved output remains viewable."];
         $Failed,
-        MaTeX`MaTeX[#, FontSize -> 16]
+        MaTeX`MaTeX[StringReplace[#, "\[IndentingNewLine]" -> "\n"], FontSize -> 16]
+      ]
+    ] &)[
+      (* StandardForm cells send BoxData/RowBox even after a style change.
+         Flatten only their text containers; never parse source as Wolfram code. *)
+      (If[VectorQ[#, StringQ], StringJoin[#], $Failed] &)[
+        Flatten[{# /. {BoxData -> List, RowBox -> List}}]
       ]
     ]
   ]

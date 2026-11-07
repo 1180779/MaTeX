@@ -125,6 +125,7 @@ change `\frac{1}{2}` to `$\frac{1}{2}$`.
 Ordinary typed or pasted text is accepted even if Mathematica internally stores
 the cell in `BoxData`/`RowBox` form. The evaluator reads the stored source cell
 directly, preserving spaces that Mathematica may strip from evaluation input.
+Unicode line separators (U+2028) are converted to ordinary newlines before rendering.
 LaTeX itself still applies its normal whitespace rules (multiple spaces collapse
 to one, and blank lines start paragraphs). Typeset fractions and other two-dimensional
 notation must be replaced with their raw LaTeX source. After updating this file,

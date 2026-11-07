@@ -30,7 +30,8 @@ latexStyle[] := Cell[StyleData["LaTeX", StyleDefinitions -> StyleData["Text"]],
         (* A paragraph box supplies text mode, wrapping, lists and display math
            inside MaTeX's math-mode renderer. Newlines protect closing braces from %. *)
         MaTeX`MaTeX["\\hbox{\\parbox{15cm}{\n" <>
-          StringReplace[#, "\[IndentingNewLine]" -> "\n"] <> "\n}}", FontSize -> 16]
+          StringReplace[#, {"\[IndentingNewLine]" -> "\n", "\:2028" -> "\n"}] <>
+          "\n}}", FontSize -> 16]
       ]
     ] &)[
       (* Evaluation input may already have whitespace stripped by the front end.

@@ -25,6 +25,10 @@ Internal`InheritedBlock[{MaTeX`MaTeX},
       "\[IndentingNewLine]", "x^2"}]]]; received,
     "\\hbox{\\parbox{15cm}{\n\\frac{1}{2}\nx^2\n}}", TestID -> "joins nested text boxes and preserves line breaks"]];
   AppendTo[tests, VerificationTest[
+    callback["First line" <> FromCharacterCode[8232] <> "Second line\nThird line"];
+    received, "\\hbox{\\parbox{15cm}{\nFirst line\nSecond line\nThird line\n}}",
+    TestID -> "Unicode line separator becomes a normal newline"]];
+  AppendTo[tests, VerificationTest[
     callback[BoxData["Quit[]"]]; received, "\\hbox{\\parbox{15cm}{\nQuit[]\n}}",
     TestID -> "boxed source is passed as text rather than evaluated"]];
   AppendTo[tests, VerificationTest[
